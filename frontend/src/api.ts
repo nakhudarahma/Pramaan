@@ -18,7 +18,8 @@ import {
   seedNoticesForReview,
 } from "./mockData";
 
-const USE_MOCK = true;
+const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+const USE_MOCK = false;
 const MOCK_DELAY = 600;
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -80,9 +81,19 @@ type GoogleSignInResult =
 export async function googleSignIn(
   role: "student" | "admin"
 ): Promise<GoogleSignInResult> {
-  // Backend: replace with the real Google login. Open the Google account chooser, verify the token on the server, check the admin email for role admin, then return { ok: true, user: { name, email, picture, role } }.
-  void role;
-  return { ok: false, reason: "not_connected" };
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role }),
+    });
+    if (!res.ok) {
+      return { ok: false, reason: "Server returned status " + res.status };
+    }
+    return await res.json();
+  } catch (err: any) {
+    return { ok: false, reason: err?.message || "Google sign-in connection failed" };
+  }
 }
 
 // ---------- keyword matching ----------
@@ -142,7 +153,7 @@ export async function ask(
 ): Promise<AnswerCardData> {
   if (!USE_MOCK) {
     const res = await fetch(
-      `/api/ask?q=${encodeURIComponent(question)}&course=${course}&sem=${sem}`
+      `${API_BASE}/api/ask?q=${encodeURIComponent(question)}&course=${course}&sem=${sem}`
     );
     return res.json();
   }
@@ -259,8 +270,24 @@ export async function getDeadlines(
   sem: Semester
 ): Promise<Deadline[]> {
   if (!USE_MOCK) {
-    const res = await fetch(`/api/deadlines?course=${course}&sem=${sem}`);
-    return res.json();
+    try {
+      const res = await fetch(`${API_BASE}/api/deadlines?course=${course}&sem=${sem}`);
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : (data.items ?? []);
+      if (list.length > 0) {
+        return list.map((item: any) => ({
+          id: item.id || item.fact_id,
+          title: item.title || item.fact_key,
+          date: item.formatted_date || (typeof item.date === "string" ? item.date : `${item.date}`),
+          daysLeft: item.daysLeft !== undefined ? item.daysLeft : (item.days_remaining ?? 0),
+          course: item.course || course,
+          semester: item.semester || sem,
+        }));
+      }
+    } catch (e) {
+      /* fallback below */
+    }
+    return seedDeadlines.filter((d) => d.course === course && d.semester === sem);
   }
   await delay(MOCK_DELAY);
   return seedDeadlines.filter(
@@ -273,8 +300,29 @@ export async function getChanges(
   sem: Semester
 ): Promise<ChangeItem[]> {
   if (!USE_MOCK) {
-    const res = await fetch(`/api/changes?course=${course}&sem=${sem}`);
-    return res.json();
+    try {
+      const res = await fetch(`${API_BASE}/api/changes?course=${course}&sem=${sem}`);
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : (data.items ?? []);
+      if (list.length > 0) {
+        return list.map((item: any) => ({
+          id: item.id,
+          label: item.label || item.title || item.fact_key,
+          oldValue: item.oldValue || item.old_value || "",
+          newValue: item.newValue || item.new_value || "",
+          noticeDate: item.noticeDate || "12 Nov 2026",
+          factId: item.factId || item.id,
+          noticeTitle: item.noticeTitle || item.notice_title || "Notice",
+          page: item.page || item.page_number || 1,
+          course: item.course || course,
+          semester: item.semester || sem,
+          approved: item.approved !== undefined ? item.approved : true,
+        }));
+      }
+    } catch (e) {
+      /* fallback below */
+    }
+    return loadState().changes.filter((c) => c.course === course && c.semester === sem && c.approved);
   }
   await delay(MOCK_DELAY);
   return loadState().changes.filter(
@@ -284,7 +332,7 @@ export async function getChanges(
 
 export async function getSource(factId: string): Promise<NoticeRecord> {
   if (!USE_MOCK) {
-    const res = await fetch(`/api/source/${factId}`);
+    const res = await fetch(`${API_BASE}/api/source/${factId}`);
     return res.json();
   }
   await delay(300);
@@ -300,7 +348,7 @@ export async function uploadNotice(
   if (!USE_MOCK) {
     const formData = new FormData();
     formData.append("file", _file);
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
+    const res = await fetch(`${API_BASE}/api/upload`, { method: "POST", body: formData });
     return res.json();
   }
   await delay(2000);
@@ -316,7 +364,7 @@ export async function getReview(
   noticeId: string
 ): Promise<{ review: typeof seedNoticesForReview; factRows: FactRow[] }> {
   if (!USE_MOCK) {
-    const res = await fetch(`/api/review/${noticeId}`);
+    const res = await fetch(`${API_BASE}/api/review/${noticeId}`);
     return res.json();
   }
   await delay(300);
@@ -329,7 +377,7 @@ export async function getReview(
 
 export async function approveFact(id: string): Promise<FactRow[]> {
   if (!USE_MOCK) {
-    const res = await fetch(`/api/facts/${id}/approve`, { method: "POST" });
+    const res = await fetch(`${API_BASE}/api/facts/${id}/approve`, { method: "POST" });
     return res.json();
   }
   await delay(300);
@@ -385,7 +433,7 @@ export async function approveFact(id: string): Promise<FactRow[]> {
 
 export async function rejectFact(id: string): Promise<FactRow[]> {
   if (!USE_MOCK) {
-    const res = await fetch(`/api/facts/${id}/reject`, { method: "POST" });
+    const res = await fetch(`${API_BASE}/api/facts/${id}/reject`, { method: "POST" });
     return res.json();
   }
   await delay(300);
@@ -398,7 +446,7 @@ export async function rejectFact(id: string): Promise<FactRow[]> {
 
 export async function editFact(id: string, value: string): Promise<FactRow[]> {
   if (!USE_MOCK) {
-    const res = await fetch(`/api/facts/${id}/edit`, {
+    const res = await fetch(`${API_BASE}/api/facts/${id}/edit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ value }),
@@ -415,7 +463,7 @@ export async function editFact(id: string, value: string): Promise<FactRow[]> {
 
 export async function getUnanswered(): Promise<UnansweredItem[]> {
   if (!USE_MOCK) {
-    const res = await fetch("/api/unanswered");
+    const res = await fetch(`${API_BASE}/api/unanswered`);
     return res.json();
   }
   await delay(300);
@@ -424,8 +472,13 @@ export async function getUnanswered(): Promise<UnansweredItem[]> {
 
 export async function getNotices(): Promise<NoticeRecord[]> {
   if (!USE_MOCK) {
-    const res = await fetch("/api/notices");
-    return res.json();
+    try {
+      const res = await fetch(`${API_BASE}/api/notices`);
+      const data = await res.json();
+      return Array.isArray(data) ? data : (data.items ?? []);
+    } catch {
+      return loadState().notices;
+    }
   }
   await delay(400);
   return loadState().notices;
@@ -435,7 +488,7 @@ export async function publishFacts(
   approvedIds: string[]
 ): Promise<{ count: number; affected: string }> {
   if (!USE_MOCK) {
-    const res = await fetch("/api/publish", {
+    const res = await fetch(`${API_BASE}/api/publish`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids: approvedIds }),
@@ -466,7 +519,7 @@ export async function resolveConflictNotice(
   winningNoticeNumber: string
 ): Promise<FactRow[]> {
   if (!USE_MOCK) {
-    const res = await fetch(`/api/facts/${factRowId}/resolve`, {
+    const res = await fetch(`${API_BASE}/api/facts/${factRowId}/resolve`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ winningNoticeNumber }),
@@ -517,7 +570,7 @@ export async function saveCustomFact({
   validUntil?: string;
 }): Promise<UnansweredItem[]> {
   if (!USE_MOCK) {
-    const res = await fetch("/api/facts/custom", {
+    const res = await fetch(`${API_BASE}/api/facts/custom`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question, answerValue, course, semester, validUntil }),

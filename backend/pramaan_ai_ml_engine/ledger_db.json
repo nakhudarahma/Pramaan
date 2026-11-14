@@ -1,0 +1,572 @@
+{
+  "notices": [
+    {
+      "id": 1,
+      "title": "Circular 101 - B.Sc. Data Science Tuition & Exam Fee",
+      "issuer": "Examination & Academic Cell",
+      "issued_on": "2026-11-10",
+      "file_url": "/files/Circular_101_Exam_And_Tuition_Fee.pdf",
+      "local_path": "sample_notices/Circular_101_Exam_And_Tuition_Fee.pdf",
+      "status": "published"
+    },
+    {
+      "id": 2,
+      "title": "Circular 104 - Revised Late Fee & Scholarship Extension",
+      "issuer": "Examination & Academic Cell",
+      "issued_on": "2026-11-12",
+      "file_url": "/files/Circular_104_Revised_Late_Fee.pdf",
+      "local_path": "sample_notices/Circular_104_Revised_Late_Fee.pdf",
+      "status": "published"
+    },
+    {
+      "id": 3,
+      "title": "Circular 105 - Sem 4 Theory & Morning Lab Schedule",
+      "issuer": "Department of Data Science",
+      "issued_on": "2026-11-11",
+      "file_url": "/files/Circular_105_Lab_Schedule_Clash_A.pdf",
+      "local_path": "sample_notices/Circular_105_Lab_Schedule_Clash_A.pdf",
+      "status": "published"
+    },
+    {
+      "id": 4,
+      "title": "Circular 106 - Sem 4 Afternoon Lab & Cultural Fest Notice",
+      "issuer": "Examination & Student Welfare Cell",
+      "issued_on": "2026-11-11",
+      "file_url": "/files/Circular_106_Lab_Schedule_Clash_B.pdf",
+      "local_path": "sample_notices/Circular_106_Lab_Schedule_Clash_B.pdf",
+      "status": "review_pending"
+    }
+  ],
+  "facts": [
+    {
+      "id": 1,
+      "notice_id": 1,
+      "issued_on": "2026-11-10",
+      "fact_key": "fee.tuition_fee",
+      "type": "fee",
+      "value": {
+        "amount": 45000,
+        "currency": "INR"
+      },
+      "unit": "INR",
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "ALL",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-10",
+      "valid_to": null,
+      "source": {
+        "notice_id": 1,
+        "page": 1,
+        "span": "Tuition fee for B.Sc. Data Science is Rs. 45000 per semester.",
+        "bbox": [
+          50.0,
+          88.18,
+          392.4,
+          103.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "NEW",
+      "target_fact_id": null,
+      "diff": null,
+      "status": "active",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 2,
+      "notice_id": 1,
+      "issued_on": "2026-11-10",
+      "fact_key": "fee.late_fee",
+      "type": "fee",
+      "value": {
+        "amount": 50,
+        "currency": "INR"
+      },
+      "unit": "INR",
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "4",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-10",
+      "valid_to": null,
+      "source": {
+        "notice_id": 1,
+        "page": 1,
+        "span": "The late fee for B.Sc. Data Science Sem 4 examination forms is Rs. 50.",
+        "bbox": [
+          50.0,
+          116.18,
+          412.6,
+          131.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "NEW",
+      "target_fact_id": null,
+      "diff": null,
+      "status": "superseded",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 3,
+      "notice_id": 1,
+      "issued_on": "2026-11-10",
+      "fact_key": "exam.form_last_date",
+      "type": "date",
+      "value": {
+        "date": "2026-11-25"
+      },
+      "unit": null,
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "4",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-10",
+      "valid_to": "2026-11-25",
+      "source": {
+        "notice_id": 1,
+        "page": 1,
+        "span": "The exam form last date for B.Sc. Data Science Sem 4 is 2026-11-25.",
+        "bbox": [
+          50.0,
+          144.18,
+          405.1,
+          159.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "NEW",
+      "target_fact_id": null,
+      "diff": null,
+      "status": "active",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 4,
+      "notice_id": 2,
+      "issued_on": "2026-11-12",
+      "fact_key": "fee.late_fee",
+      "type": "fee",
+      "value": {
+        "amount": 75,
+        "currency": "INR"
+      },
+      "unit": "INR",
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "4",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-12",
+      "valid_to": null,
+      "source": {
+        "notice_id": 2,
+        "page": 1,
+        "span": "Superseding Circular 101, the late fee for B.Sc. Data Science Sem 4 is revised to Rs. 75.",
+        "bbox": [
+          50.0,
+          88.18,
+          471.2,
+          103.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": "Circular 101",
+      "conflict_outcome": "SUPERSEDES",
+      "target_fact_id": 2,
+      "diff": {
+        "fact_key": "fee.late_fee",
+        "old_value": {
+          "amount": 50,
+          "currency": "INR"
+        },
+        "new_value": {
+          "amount": 75,
+          "currency": "INR"
+        },
+        "old_notice_date": "2026-11-10",
+        "new_notice_date": "2026-11-12"
+      },
+      "status": "active",
+      "supersedes_id": 2,
+      "supersedes_summary": "Replaces notice of 2026-11-10 (Rs. 50)"
+    },
+    {
+      "id": 5,
+      "notice_id": 2,
+      "issued_on": "2026-11-12",
+      "fact_key": "fee.deadline",
+      "type": "date",
+      "value": {
+        "date": "2026-11-20"
+      },
+      "unit": null,
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "4",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-12",
+      "valid_to": "2026-11-20",
+      "source": {
+        "notice_id": 2,
+        "page": 1,
+        "span": "Fee payment deadline for B.Sc. Data Science Sem 4 is 2026-11-20.",
+        "bbox": [
+          50.0,
+          116.18,
+          398.0,
+          131.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "NEW",
+      "target_fact_id": null,
+      "diff": null,
+      "status": "active",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 6,
+      "notice_id": 2,
+      "issued_on": "2026-11-12",
+      "fact_key": "scholarship.deadline",
+      "type": "date",
+      "value": {
+        "date": "2026-11-30"
+      },
+      "unit": null,
+      "scope": {
+        "course": "ALL",
+        "sem": "ALL",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-12",
+      "valid_to": "2026-11-30",
+      "source": {
+        "notice_id": 2,
+        "page": 1,
+        "span": "The scholarship application deadline for all students is extended to 2026-11-30.",
+        "bbox": [
+          50.0,
+          144.18,
+          442.0,
+          159.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "NEW",
+      "target_fact_id": null,
+      "diff": null,
+      "status": "active",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 7,
+      "notice_id": 1,
+      "issued_on": "2026-11-10",
+      "fact_key": "policy.attendance_min",
+      "type": "policy",
+      "value": {
+        "text": "75% minimum attendance required (65% with medical certificate)"
+      },
+      "unit": "percent",
+      "scope": {
+        "course": "ALL",
+        "sem": "ALL",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-10",
+      "valid_to": null,
+      "source": {
+        "notice_id": 1,
+        "page": 1,
+        "span": "Minimum attendance required for all courses is 75% (65% with medical certificate).",
+        "bbox": [
+          50.0,
+          172.18,
+          455.0,
+          187.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "NEW",
+      "target_fact_id": null,
+      "diff": null,
+      "status": "active",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 8,
+      "notice_id": 3,
+      "issued_on": "2026-11-11",
+      "fact_key": "exam.start_date",
+      "type": "date",
+      "value": {
+        "date": "2026-12-08"
+      },
+      "unit": null,
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "4",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-11",
+      "valid_to": "2026-12-08",
+      "source": {
+        "notice_id": 3,
+        "page": 1,
+        "span": "Revised Sem 4 theory exams for B.Sc. Data Science commence on 2026-12-08.",
+        "bbox": [
+          50.0,
+          88.18,
+          435.0,
+          103.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "NEW",
+      "target_fact_id": null,
+      "diff": null,
+      "status": "active",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 9,
+      "notice_id": 3,
+      "issued_on": "2026-11-11",
+      "fact_key": "exam.lab_time",
+      "type": "schedule",
+      "value": {
+        "time": "09:30 AM"
+      },
+      "unit": null,
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "4",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-11",
+      "valid_to": null,
+      "source": {
+        "notice_id": 3,
+        "page": 1,
+        "span": "DBMS Lab exam for B.Sc. Data Science Sem 4 will begin at 09:30 AM.",
+        "bbox": [
+          50.0,
+          116.18,
+          410.0,
+          131.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "DISPUTED",
+      "target_fact_id": 10,
+      "diff": {
+        "fact_key": "exam.lab_time",
+        "fact_a_value": {
+          "time": "09:30 AM"
+        },
+        "fact_b_value": {
+          "time": "02:00 PM"
+        },
+        "issue_date": "2026-11-11"
+      },
+      "status": "disputed",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 10,
+      "notice_id": 4,
+      "issued_on": "2026-11-11",
+      "fact_key": "exam.lab_time",
+      "type": "schedule",
+      "value": {
+        "time": "02:00 PM"
+      },
+      "unit": null,
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "4",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-11",
+      "valid_to": null,
+      "source": {
+        "notice_id": 4,
+        "page": 1,
+        "span": "DBMS Lab exam for B.Sc. Data Science Sem 4 is scheduled at 02:00 PM.",
+        "bbox": [
+          50.0,
+          88.18,
+          415.0,
+          103.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "DISPUTED",
+      "target_fact_id": 9,
+      "diff": {
+        "fact_key": "exam.lab_time",
+        "fact_a_value": {
+          "time": "09:30 AM"
+        },
+        "fact_b_value": {
+          "time": "02:00 PM"
+        },
+        "issue_date": "2026-11-11"
+      },
+      "status": "disputed",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 11,
+      "notice_id": 4,
+      "issued_on": "2026-11-11",
+      "fact_key": "fee.hostel_fee",
+      "type": "fee",
+      "value": {
+        "amount": 32000,
+        "currency": "INR"
+      },
+      "unit": "INR",
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "1",
+        "batch": "ALL",
+        "category": "Hostel"
+      },
+      "valid_from": "2026-11-11",
+      "valid_to": null,
+      "source": {
+        "notice_id": 4,
+        "page": 1,
+        "span": "First-year Sem 1 hostel fee for B.Sc. Data Science is Rs. 32000.",
+        "bbox": [
+          50.0,
+          116.18,
+          395.0,
+          131.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "NEW",
+      "target_fact_id": null,
+      "diff": null,
+      "status": "active",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    },
+    {
+      "id": 12,
+      "notice_id": 4,
+      "issued_on": "2026-11-11",
+      "fact_key": "activity.cultural_fest_date",
+      "type": "date",
+      "value": {
+        "date": "2026-12-18"
+      },
+      "unit": null,
+      "scope": {
+        "course": "ALL",
+        "sem": "ALL",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "valid_from": "2026-11-11",
+      "valid_to": "2026-12-18",
+      "source": {
+        "notice_id": 4,
+        "page": 1,
+        "span": "Annual Cultural Fest Udaan starts on 2026-12-18.",
+        "bbox": [
+          50.0,
+          144.18,
+          340.0,
+          159.29
+        ],
+        "low_precision": false
+      },
+      "supersedes_ref": null,
+      "conflict_outcome": "NEW",
+      "target_fact_id": null,
+      "diff": null,
+      "status": "active",
+      "supersedes_id": null,
+      "supersedes_summary": null
+    }
+  ],
+  "change_events": [
+    {
+      "id": 1,
+      "fact_key": "fee.late_fee",
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "4",
+        "batch": "ALL",
+        "category": "ALL"
+      },
+      "old_fact_id": 2,
+      "new_fact_id": 4,
+      "old_value": "Rs. 50",
+      "new_value": "Rs. 75",
+      "notice_date": "2026-11-12",
+      "created_at": "2026-11-12T10:30:00"
+    }
+  ],
+  "unanswered": [
+    {
+      "id": 1,
+      "question": "When is the re-exam date?",
+      "scope": {
+        "course": "B.Sc. Data Science",
+        "sem": "4",
+        "batch": "ALL"
+      },
+      "intent_guess": "exam.re_exam_date",
+      "created_at": "2026-11-12T11:00:00"
+    }
+  ],
+  "audit_log": [
+    {
+      "id": 1,
+      "action": "approve_supersession",
+      "fact_id": 4,
+      "replaces_fact_id": 2,
+      "at": "2026-11-12T10:30:00"
+    }
+  ]
+}

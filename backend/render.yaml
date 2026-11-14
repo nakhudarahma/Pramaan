@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: pramaan-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_BUCKET
+        value: pramaan-documents
+      - key: STORAGE_BACKEND
+        value: supabase
+      - key: GEMINI_MODEL
+        value: gemini-flash-lite-latest
+      - key: GEMINI_EMBEDDING_MODEL
+        value: gemini-embedding-001
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AUTO_CREATE_TABLES
+        value: "true"
+      - key: CORS_ORIGINS
+        sync: false
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: PGVECTOR_ENABLED
+        value: "false"

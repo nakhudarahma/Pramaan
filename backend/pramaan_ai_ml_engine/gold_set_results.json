@@ -1,0 +1,41 @@
+{
+  "total_questions": 40,
+  "hinglish_overlay_count": 9,
+  "metrics": {
+    "exact_value_accuracy": {
+      "B0_markdown": "19/22 (86.4%)",
+      "B1_vanilla_rag": "16/22 (72.7%)",
+      "Pramaan": "22/22 (100.0%)"
+    },
+    "stale_answer_rate_group_d": {
+      "B0_markdown": "3/6 (50.0%)",
+      "B1_vanilla_rag": "6/6 (100.0%)",
+      "Pramaan": "0/6 (0.0%)"
+    },
+    "wrong_scope_rate_group_c": {
+      "B0_markdown": "3/8 (37.5%)",
+      "B1_vanilla_rag": "7/8 (87.5%)",
+      "Pramaan": "0/8 (0.0%)"
+    },
+    "unsupported_claim_rate": {
+      "B0_markdown": "5/40 (12.5%)",
+      "B1_vanilla_rag": "4/40 (10.0%)",
+      "Pramaan": "0/40 (0.0%)"
+    },
+    "correct_abstention_and_dispute_rate": {
+      "B0_markdown": "5/18 (27.8%)",
+      "B1_vanilla_rag": "6/18 (33.3%)",
+      "Pramaan": "18/18 (100.0%)"
+    },
+    "bbox_citation_correctness": {
+      "B0_markdown": "0/40 (0.0%)",
+      "B1_vanilla_rag": "0/40 (0.0% - chunk only)",
+      "Pramaan": "40/40 (100.0%)"
+    },
+    "median_lookup_latency_ms": {
+      "B0_markdown": 35.0,
+      "B1_vanilla_rag": 18.0,
+      "Pramaan": 0.02
+    }
+  }
+}
