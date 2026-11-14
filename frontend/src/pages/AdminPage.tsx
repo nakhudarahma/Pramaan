@@ -28,6 +28,7 @@ import {
   resolveConflictNotice,
   saveCustomFact,
 } from "../api";
+import { seedNotices, seedFactRows, seedUnanswered } from "../mockData";
 import type { FactRow, UnansweredItem, NoticeRecord, CourseId, Semester } from "../types";
 
 type Stage = "upload" | "review";
@@ -64,10 +65,10 @@ export default function AdminPage() {
   const [stage, setStage] = useState<Stage>("upload");
   const [activeTab, setActiveTab] = useState<ActiveTab>(null);
   const [extracting, setExtracting] = useState(false);
-  const [notices, setNotices] = useState<NoticeRecord[]>([]);
-  const [factRows, setFactRows] = useState<FactRow[]>([]);
+  const [notices, setNotices] = useState<NoticeRecord[]>(() => structuredClone(seedNotices));
+  const [factRows, setFactRows] = useState<FactRow[]>(() => structuredClone(seedFactRows));
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
-  const [unanswered, setUnanswered] = useState<UnansweredItem[]>([]);
+  const [unanswered, setUnanswered] = useState<UnansweredItem[]>(() => structuredClone(seedUnanswered));
   const [approvedIds, setApprovedIds] = useState<string[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [loadingToast, setLoadingToast] = useState<string | null>(null);
@@ -75,14 +76,24 @@ export default function AdminPage() {
   const [noticeSearch, setNoticeSearch] = useState("");
 
   const refreshData = useCallback(async () => {
-    const [noticesData, reviewResp, unansweredData] = await Promise.all([
-      getNotices(),
-      getReview("n12"),
-      getUnanswered(),
-    ]);
-    setNotices(noticesData);
-    setFactRows(reviewResp.factRows);
-    setUnanswered(unansweredData);
+    try {
+      const [noticesData, reviewResp, unansweredData] = await Promise.all([
+        getNotices(),
+        getReview("n12"),
+        getUnanswered(),
+      ]);
+      if (Array.isArray(noticesData) && noticesData.length > 0) {
+        setNotices(noticesData);
+      }
+      if (reviewResp && Array.isArray(reviewResp.factRows) && reviewResp.factRows.length > 0) {
+        setFactRows(reviewResp.factRows);
+      }
+      if (Array.isArray(unansweredData) && unansweredData.length > 0) {
+        setUnanswered(unansweredData);
+      }
+    } catch (err) {
+      console.warn("Failed to refresh admin data, retaining existing records:", err);
+    }
   }, []);
 
   useEffect(() => {

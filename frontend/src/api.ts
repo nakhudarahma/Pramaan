@@ -21,13 +21,18 @@ import {
 
 const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
 const USE_MOCK = false;
-const MOCK_DELAY = 600;
+const MOCK_DELAY = 150;
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+function isDemoSession(): boolean {
+  const session = getSession();
+  return Boolean(session?.demo || session?.mock);
+}
+
 // ---------- localStorage persistence ----------
 
-const STORAGE_KEY = "pramaan-demo-state-v5";
+const STORAGE_KEY = "pramaan-demo-state-v9";
 
 interface PersistedState {
   facts: typeof seedFacts;
@@ -46,13 +51,28 @@ function loadState(): PersistedState {
     /* ignore */
   }
   const fresh: PersistedState = {
-    facts: stored.facts ?? structuredClone(seedFacts),
-    factRows: stored.factRows ?? structuredClone(seedFactRows),
-    changes: stored.changes ?? structuredClone(seedChanges),
-    unanswered: stored.unanswered ?? structuredClone(seedUnanswered),
-    notices: stored.notices ?? structuredClone(seedNotices),
+    facts:
+      stored.facts && Object.keys(stored.facts).length > 0
+        ? stored.facts
+        : structuredClone(seedFacts),
+    factRows:
+      stored.factRows && stored.factRows.length > 0
+        ? stored.factRows
+        : structuredClone(seedFactRows),
+    changes:
+      stored.changes && stored.changes.length > 0
+        ? stored.changes
+        : structuredClone(seedChanges),
+    unanswered:
+      stored.unanswered && stored.unanswered.length > 0
+        ? stored.unanswered
+        : structuredClone(seedUnanswered),
+    notices:
+      stored.notices && stored.notices.length > 0
+        ? stored.notices
+        : structuredClone(seedNotices),
   };
-  if (!stored.facts) saveState(fresh);
+  saveState(fresh);
   return fresh;
 }
 
@@ -66,6 +86,11 @@ function saveState(state: PersistedState) {
 
 export function resetDemo() {
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem("pramaan-demo-state-v5");
+  localStorage.removeItem("pramaan-demo-state-v6");
+  localStorage.removeItem("pramaan-demo-state-v7");
+  localStorage.removeItem("pramaan-demo-state-v8");
+  localStorage.removeItem("pramaan-demo-state-v9");
   localStorage.removeItem("pramaan-context");
 }
 
@@ -342,73 +367,84 @@ export async function getDeadlines(
   course: CourseId,
   sem: Semester
 ): Promise<Deadline[]> {
-  if (!USE_MOCK) {
+  if (!USE_MOCK && !isDemoSession()) {
     try {
       const res = await fetch(`${API_BASE}/api/deadlines?course=${course}&sem=${sem}`);
-      const data = await res.json();
-      const list = Array.isArray(data) ? data : (data.items ?? []);
-      if (list.length > 0) {
-        return list.map((item: any) => ({
-          id: item.id || item.fact_id,
-          title: item.title || item.fact_key,
-          date: item.formatted_date || (typeof item.date === "string" ? item.date : `${item.date}`),
-          daysLeft: item.daysLeft !== undefined ? item.daysLeft : (item.days_remaining ?? 0),
-          course: item.course || course,
-          semester: item.semester || sem,
-        }));
+      if (res.ok) {
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.items ?? []);
+        if (list.length > 0) {
+          return list.map((item: any) => ({
+            id: item.id || item.fact_id,
+            title: item.title || item.fact_key,
+            date: item.formatted_date || (typeof item.date === "string" ? item.date : `${item.date}`),
+            daysLeft: item.daysLeft !== undefined ? item.daysLeft : (item.days_remaining ?? 0),
+            course: item.course || course,
+            semester: item.semester || sem,
+          }));
+        }
       }
     } catch (e) {
       /* fallback below */
     }
-    return seedDeadlines.filter((d) => d.course === course && d.semester === sem);
   }
-  await delay(MOCK_DELAY);
-  return seedDeadlines.filter(
-    (d) => d.course === course && d.semester === sem
-  );
+  await delay(100);
+  const filtered = seedDeadlines.filter((d) => d.course === course && d.semester === sem);
+  return filtered.length > 0 ? filtered : seedDeadlines.slice(0, 3);
 }
 
 export async function getChanges(
   course: CourseId,
   sem: Semester
 ): Promise<ChangeItem[]> {
-  if (!USE_MOCK) {
+  if (!USE_MOCK && !isDemoSession()) {
     try {
       const res = await fetch(`${API_BASE}/api/changes?course=${course}&sem=${sem}`);
-      const data = await res.json();
-      const list = Array.isArray(data) ? data : (data.items ?? []);
-      if (list.length > 0) {
-        return list.map((item: any) => ({
-          id: item.id,
-          label: item.label || item.title || item.fact_key,
-          oldValue: item.oldValue || item.old_value || "",
-          newValue: item.newValue || item.new_value || "",
-          noticeDate: item.noticeDate || "12 Nov 2026",
-          factId: item.factId || item.id,
-          noticeTitle: item.noticeTitle || item.notice_title || "Notice",
-          page: item.page || item.page_number || 1,
-          course: item.course || course,
-          semester: item.semester || sem,
-          approved: item.approved !== undefined ? item.approved : true,
-        }));
+      if (res.ok) {
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.items ?? []);
+        if (list.length > 0) {
+          return list.map((item: any) => ({
+            id: item.id,
+            label: item.label || item.title || item.fact_key,
+            oldValue: item.oldValue || item.old_value || "",
+            newValue: item.newValue || item.new_value || "",
+            noticeDate: item.noticeDate || "12 Nov 2026",
+            factId: item.factId || item.id,
+            noticeTitle: item.noticeTitle || item.notice_title || "Notice",
+            page: item.page || item.page_number || 1,
+            course: item.course || course,
+            semester: item.semester || sem,
+            approved: item.approved !== undefined ? item.approved : true,
+          }));
+        }
       }
     } catch (e) {
       /* fallback below */
     }
-    return loadState().changes.filter((c) => c.course === course && c.semester === sem && c.approved);
   }
-  await delay(MOCK_DELAY);
-  return loadState().changes.filter(
+  await delay(100);
+  const st = loadState();
+  const filtered = st.changes.filter(
     (c) => c.course === course && c.semester === sem && c.approved
   );
+  if (filtered.length > 0) return filtered;
+  const anyApproved = st.changes.filter((c) => c.approved);
+  return anyApproved.length > 0 ? anyApproved : structuredClone(seedChanges);
 }
 
 export async function getSource(factId: string): Promise<NoticeRecord> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/source/${factId}`);
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const res = await fetch(`${API_BASE}/api/source/${factId}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn("API /api/source failed, falling back:", e);
+    }
   }
-  await delay(300);
+  await delay(100);
   const state = loadState();
   const noticeId = FACT_TO_NOTICE[factId] || "n10";
   const notice = state.notices.find((n) => n.id === noticeId) || state.notices[0];
@@ -418,42 +454,67 @@ export async function getSource(factId: string): Promise<NoticeRecord> {
 export async function uploadNotice(
   _file: File
 ): Promise<{ noticeId: string; review: typeof seedNoticesForReview; factRows: FactRow[] }> {
-  if (!USE_MOCK) {
-    const formData = new FormData();
-    formData.append("file", _file);
-    const res = await fetch(`${API_BASE}/api/upload`, { method: "POST", body: formData });
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const formData = new FormData();
+      formData.append("file", _file);
+      const res = await fetch(`${API_BASE}/api/upload`, { method: "POST", body: formData });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.factRows) return data;
+      }
+    } catch (e) {
+      console.warn("API /api/upload failed, falling back to mock upload:", e);
+    }
   }
-  await delay(2000);
+  await delay(1000);
   const state = loadState();
+  const pending = state.factRows.filter((r) => r.status === "pending");
   return {
     noticeId: "n12",
     review: seedNoticesForReview,
-    factRows: state.factRows.filter((r) => r.status === "pending"),
+    factRows: pending.length > 0 ? pending : structuredClone(seedFactRows),
   };
 }
 
 export async function getReview(
   noticeId: string
 ): Promise<{ review: typeof seedNoticesForReview; factRows: FactRow[] }> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/review/${noticeId}`);
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const res = await fetch(`${API_BASE}/api/review/${noticeId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.factRows) && data.factRows.length > 0) {
+          return data;
+        }
+      }
+    } catch (e) {
+      console.warn("API /api/review failed, falling back:", e);
+    }
   }
-  await delay(300);
+  await delay(100);
   const state = loadState();
+  const pending = state.factRows.filter((r) => r.status === "pending");
   return {
     review: seedNoticesForReview,
-    factRows: state.factRows.filter((r) => r.status === "pending"),
+    factRows: pending.length > 0 ? pending : structuredClone(seedFactRows),
   };
 }
 
 export async function approveFact(id: string): Promise<FactRow[]> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/facts/${id}/approve`, { method: "POST" });
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const res = await fetch(`${API_BASE}/api/facts/${id}/approve`, { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+      }
+    } catch (e) {
+      console.warn("API /api/facts/approve failed, falling back:", e);
+    }
   }
-  await delay(300);
+  await delay(150);
   const state = loadState();
   const row = state.factRows.find((r) => r.id === id);
   if (row) {
@@ -505,11 +566,18 @@ export async function approveFact(id: string): Promise<FactRow[]> {
 }
 
 export async function rejectFact(id: string): Promise<FactRow[]> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/facts/${id}/reject`, { method: "POST" });
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const res = await fetch(`${API_BASE}/api/facts/${id}/reject`, { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+      }
+    } catch (e) {
+      console.warn("API /api/facts/reject failed, falling back:", e);
+    }
   }
-  await delay(300);
+  await delay(150);
   const state = loadState();
   const row = state.factRows.find((r) => r.id === id);
   if (row) row.status = "rejected";
@@ -518,15 +586,22 @@ export async function rejectFact(id: string): Promise<FactRow[]> {
 }
 
 export async function editFact(id: string, value: string): Promise<FactRow[]> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/facts/${id}/edit`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ value }),
-    });
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const res = await fetch(`${API_BASE}/api/facts/${id}/edit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+      }
+    } catch (e) {
+      console.warn("API /api/facts/edit failed, falling back:", e);
+    }
   }
-  await delay(300);
+  await delay(150);
   const state = loadState();
   const row = state.factRows.find((r) => r.id === id);
   if (row) row.value = value;
@@ -535,40 +610,59 @@ export async function editFact(id: string, value: string): Promise<FactRow[]> {
 }
 
 export async function getUnanswered(): Promise<UnansweredItem[]> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/unanswered`);
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const res = await fetch(`${API_BASE}/api/unanswered`);
+      if (res.ok) {
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.items ?? []);
+        if (list.length > 0) return list;
+      }
+    } catch (e) {
+      console.warn("API /api/unanswered failed, falling back:", e);
+    }
   }
-  await delay(300);
-  return loadState().unanswered;
+  await delay(150);
+  const unanswered = loadState().unanswered;
+  return unanswered && unanswered.length > 0 ? unanswered : structuredClone(seedUnanswered);
 }
 
 export async function getNotices(): Promise<NoticeRecord[]> {
-  if (!USE_MOCK) {
+  if (!USE_MOCK && !isDemoSession()) {
     try {
       const res = await fetch(`${API_BASE}/api/notices`);
-      const data = await res.json();
-      return Array.isArray(data) ? data : (data.items ?? []);
+      if (res.ok) {
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.items ?? []);
+        if (list.length > 0) return list;
+      }
     } catch {
-      return loadState().notices;
+      /* fallback below */
     }
   }
-  await delay(400);
-  return loadState().notices;
+  await delay(150);
+  const notices = loadState().notices;
+  return notices && notices.length > 0 ? notices : structuredClone(seedNotices);
 }
 
 export async function publishFacts(
   approvedIds: string[]
 ): Promise<{ count: number; affected: string }> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/publish`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids: approvedIds }),
-    });
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const res = await fetch(`${API_BASE}/api/publish`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: approvedIds }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn("API /api/publish failed, falling back:", e);
+    }
   }
-  await delay(500);
+  await delay(250);
   return { count: approvedIds.length, affected: "B.Sc Data Science Sem 4" };
 }
 
@@ -591,15 +685,22 @@ export async function resolveConflictNotice(
   factRowId: string,
   winningNoticeNumber: string
 ): Promise<FactRow[]> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/facts/${factRowId}/resolve`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ winningNoticeNumber }),
-    });
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const res = await fetch(`${API_BASE}/api/facts/${factRowId}/resolve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ winningNoticeNumber }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+      }
+    } catch (e) {
+      console.warn("API /api/facts/resolve failed, falling back:", e);
+    }
   }
-  await delay(300);
+  await delay(150);
   const state = loadState();
   const row = state.factRows.find((r) => r.id === factRowId);
   if (row) {
@@ -642,15 +743,22 @@ export async function saveCustomFact({
   semester: Semester;
   validUntil?: string;
 }): Promise<UnansweredItem[]> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/facts/custom`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, answerValue, course, semester, validUntil }),
-    });
-    return res.json();
+  if (!USE_MOCK && !isDemoSession()) {
+    try {
+      const res = await fetch(`${API_BASE}/api/facts/custom`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, answerValue, course, semester, validUntil }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+      }
+    } catch (e) {
+      console.warn("API /api/facts/custom failed, falling back:", e);
+    }
   }
-  await delay(300);
+  await delay(150);
   const state = loadState();
   const factId = `f-custom-${Date.now()}`;
   const key = `custom_${Date.now()}`;

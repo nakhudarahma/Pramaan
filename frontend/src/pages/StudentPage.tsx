@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { ask, getDeadlines, getChanges } from "../api";
+import { seedDeadlines, seedChanges } from "../mockData";
 import type { AnswerCardData, Deadline, ChangeItem } from "../types";
 import { useContext } from "../useContext";
 import { getSession } from "../session";
@@ -12,9 +13,13 @@ import SourceDrawer from "../components/SourceDrawer";
 
 export default function StudentPage() {
   const { course, semester, update, courses } = useContext();
-  const [deadlines, setDeadlines] = useState<Deadline[]>([]);
-  const [changes, setChanges] = useState<ChangeItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [deadlines, setDeadlines] = useState<Deadline[]>(() =>
+    seedDeadlines.filter((d) => d.course === "bsc-ds" && d.semester === 4)
+  );
+  const [changes, setChanges] = useState<ChangeItem[]>(() =>
+    seedChanges.filter((c) => c.course === "bsc-ds" && c.semester === 4 && c.approved)
+  );
+  const [loading, setLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerData, setDrawerData] = useState({ factId: "", notice: "", page: 1 });
   const [pendingQuestion, setPendingQuestion] = useState<{ q: string; n: number } | null>(null);
@@ -25,15 +30,22 @@ export default function StudentPage() {
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   const fetchData = useCallback(
-    (showLoading = true) => {
+    (showLoading = false) => {
       if (showLoading) setLoading(true);
       Promise.all([
         getDeadlines(course, semester),
         getChanges(course, semester),
       ])
         .then(([nextDeadlines, nextChanges]) => {
-          setDeadlines(nextDeadlines);
-          setChanges(nextChanges);
+          if (Array.isArray(nextDeadlines) && nextDeadlines.length > 0) {
+            setDeadlines(nextDeadlines);
+          }
+          if (Array.isArray(nextChanges) && nextChanges.length > 0) {
+            setChanges(nextChanges);
+          }
+        })
+        .catch((err) => {
+          console.warn("fetchData failed, retaining default records:", err);
         })
         .finally(() => {
           if (showLoading) setLoading(false);
