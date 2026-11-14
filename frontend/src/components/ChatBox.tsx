@@ -95,20 +95,27 @@ export default function ChatBox({ onAsk, onSource, initialQuestion, initialNonce
       setMessages((prev) =>
         prev.map((m) => (m.id === msgId ? { ...m, answer, loading: false } : m))
       );
-    } catch {
+    } catch (err) {
+      console.warn("Chat ask failed:", err);
       await finishTyping();
       setMessages((prev) =>
-        prev.map((m) => ({
-          ...m,
-          loading: false,
-          answer: {
-            state: "unavailable",
-            text: "Something went wrong.",
-            appliesTo: "",
-            validUntil: "",
-            sources: [],
-          },
-        }))
+        prev.map((m) =>
+          m.id === msgId
+            ? {
+                ...m,
+                loading: false,
+                answer: {
+                  state: "unavailable",
+                  text: "I couldn't get a response just now. Please try again.",
+                  appliesTo: "",
+                  validUntil: "",
+                  sources: [],
+                  contact: "Academic Office",
+                  note: "Your question was logged for the admin.",
+                },
+              }
+            : m
+        )
       );
     }
   };

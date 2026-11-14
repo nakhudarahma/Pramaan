@@ -1,3 +1,4 @@
+import { getSession } from "./session";
 import type {
   AnswerCardData,
   CourseId,
@@ -37,20 +38,21 @@ interface PersistedState {
 }
 
 function loadState(): PersistedState {
+  let stored: Partial<PersistedState> = {};
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as PersistedState;
+    if (raw) stored = JSON.parse(raw) || {};
   } catch {
     /* ignore */
   }
   const fresh: PersistedState = {
-    facts: structuredClone(seedFacts),
-    factRows: structuredClone(seedFactRows),
-    changes: structuredClone(seedChanges),
-    unanswered: structuredClone(seedUnanswered),
-    notices: structuredClone(seedNotices),
+    facts: stored.facts ?? structuredClone(seedFacts),
+    factRows: stored.factRows ?? structuredClone(seedFactRows),
+    changes: stored.changes ?? structuredClone(seedChanges),
+    unanswered: stored.unanswered ?? structuredClone(seedUnanswered),
+    notices: stored.notices ?? structuredClone(seedNotices),
   };
-  saveState(fresh);
+  if (!stored.facts) saveState(fresh);
   return fresh;
 }
 
@@ -147,16 +149,65 @@ function parseDateValue(value: string): Date | null {
 
 // ---------- API functions ----------
 
-export async function ask(
+async function askImpl(
   question: string,
   course: CourseId,
   sem: Semester
 ): Promise<AnswerCardData> {
-  if (!USE_MOCK) {
-    const res = await fetch(
-      `${API_BASE}/api/ask?q=${encodeURIComponent(question)}&course=${course}&sem=${sem}`
-    );
-    return res.json();
+  const session = getSession();
+  const isDemo = session?.demo === true;
+
+  if (!USE_MOCK && !isDemo) {
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/ask?q=${encodeURIComponent(question)}&course=${course}&sem=${sem}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        let state: AnswerCardData["state"] = "verified";
+        if (data.state === "outdated" || data.state === "disputed" || data.state === "unavailable") {
+          state = data.state;
+        } else if (data.state === "wrong_scope") {
+          state = "outdated";
+        } else if (data.state === "clarification" || data.state === "error") {
+          state = "unavailable";
+        }
+
+        const sources = (data.sources && Array.isArray(data.sources) && data.sources.length > 0)
+          ? data.sources
+          : (data.citations && Array.isArray(data.citations))
+          ? data.citations.map(
+              (c: {
+                fact_id?: string;
+                notice_title?: string;
+                document_name?: string;
+                page_number?: number;
+              }) => ({
+                factId: c.fact_id || "f0",
+                notice: c.notice_title || c.document_name || "Official Notice",
+                page: c.page_number || 1,
+              })
+            )
+          : [];
+
+        return {
+          state,
+          text: data.text || data.answer || "Official notice record verified.",
+          appliesTo: data.appliesTo || `${courseLabel(course)}, Sem ${sem}`,
+          validUntil: data.validUntil || "—",
+          replaces: data.replaces || undefined,
+          sources,
+          contact: data.contact || data.office_contact || undefined,
+          note: data.note || undefined,
+          issuedBy: data.issuedBy || undefined,
+          noticeNumber: data.noticeNumber || undefined,
+          noticeDate: data.noticeDate || undefined,
+          category: data.category || undefined,
+        };
+      }
+    } catch (err) {
+      console.warn("API /api/ask unavailable, falling back to local ledger:", err);
+    }
   }
   await delay(MOCK_DELAY);
   const match = matchFact(question);
@@ -264,6 +315,27 @@ export async function ask(
     contact: f.contact,
     ...noticeMeta,
   };
+}
+
+export async function ask(
+  question: string,
+  course: CourseId,
+  sem: Semester
+): Promise<AnswerCardData> {
+  try {
+    return await askImpl(question, course, sem);
+  } catch (err) {
+    console.warn("ask() failed, returning safe fallback:", err);
+    return {
+      state: "unavailable",
+      text: "I couldn't reach the notice service right now. Please try again in a moment.",
+      appliesTo: `${courseLabel(course)}, Sem ${sem}`,
+      validUntil: "—",
+      sources: [],
+      contact: "Academic Office",
+      note: "Your question was logged for the admin.",
+    };
+  }
 }
 
 export async function getDeadlines(

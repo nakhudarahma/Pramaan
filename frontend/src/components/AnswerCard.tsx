@@ -15,7 +15,7 @@ import {
   ThumbsUp,
   ThumbsDown,
 } from "lucide-react";
-import type { AnswerCardData } from "../types";
+import type { AnswerCardData, AnswerState } from "../types";
 import Toast from "./Toast";
 
 interface Props {
@@ -29,7 +29,7 @@ export default function AnswerCard({ data, loading, onSource }: Props) {
   const [reaction, setReaction] = useState<"up" | "down" | null>(null);
   const [showCopiedToast, setShowCopiedToast] = useState(false);
 
-  const shareText = `${data.text}${data.appliesTo ? ` — ${data.appliesTo}` : ""}`;
+  const shareText = `${data?.text || ""}${data?.appliesTo ? ` — ${data.appliesTo}` : ""}`;
 
   const handleCopy = async () => {
     try {
@@ -105,8 +105,14 @@ export default function AnswerCard({ data, loading, onSource }: Props) {
     },
   };
 
-  const c = config[data.state];
+  const rawState = String(data?.state || "verified");
+  const stateKey: AnswerState =
+    rawState === "outdated" || rawState === "disputed" || rawState === "unavailable"
+      ? rawState
+      : "verified";
+  const c = config[stateKey] || config.verified;
   const Icon = c.icon;
+  const sources = Array.isArray(data.sources) ? data.sources : [];
 
   return (
     <div
@@ -139,11 +145,13 @@ export default function AnswerCard({ data, loading, onSource }: Props) {
       {data.state !== "unavailable" && (
         <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-3">
           {[
-            { label: "Issued by", value: data.issuedBy || "—" },
-            { label: "Notice no.", value: data.noticeNumber || "—" },
-            { label: "Notice date", value: data.noticeDate || "—" },
+            { label: "Issued by", value: data.issuedBy },
+            { label: "Notice no.", value: data.noticeNumber },
+            { label: "Notice date", value: data.noticeDate },
             { label: "Category", value: data.category || "General" },
-          ].map((meta) => (
+          ]
+            .filter((meta) => meta.value)
+            .map((meta) => (
             <div key={meta.label} className="min-w-0">
               <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-night-muted">
                 {meta.label}
@@ -191,7 +199,7 @@ export default function AnswerCard({ data, loading, onSource }: Props) {
       {/* Disputed: list both sources */}
       {data.state === "disputed" && (
         <div className="space-y-2 mb-3">
-          {data.sources.map((s, i) => (
+          {sources.map((s, i) => (
             <div
               key={s.factId}
               className="flex items-center justify-between bg-rose-50/50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/25 rounded-xl p-2.5"
@@ -212,9 +220,9 @@ export default function AnswerCard({ data, loading, onSource }: Props) {
 
       {/* Source chips for verified/outdated */}
       {(data.state === "verified" || data.state === "outdated") &&
-        data.sources.length > 0 && (
+        sources.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {data.sources.map((s) => (
+            {sources.map((s) => (
               <button
                 key={s.factId}
                 onClick={() => onSource(s.factId, s.notice, s.page)}
