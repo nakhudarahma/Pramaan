@@ -12,6 +12,16 @@ import {
 import { setSession } from "../session";
 import { googleSignIn } from "../api";
 
+declare global {
+  interface Window {
+    google?: any;
+  }
+}
+
+const GOOGLE_CLIENT_ID =
+  (import.meta.env.VITE_GOOGLE_CLIENT_ID as string) ||
+  "284274072838-2j6tt9t4059p62fbvv6hkopfissavf87.apps.googleusercontent.com";
+
 function GoogleIcon() {
   return (
     <svg viewBox="0 0 48 48" className="h-5 w-5" aria-hidden="true">
@@ -85,6 +95,60 @@ export default function LoginPage() {
       return;
     }
 
+    // Try real Google Identity Services (OAuth2 popup) if available
+    if (source === "google" && window.google?.accounts?.oauth2) {
+      try {
+        const client = window.google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: "email profile openid",
+          callback: async (tokenResponse: any) => {
+            if (tokenResponse?.error) {
+              setGoogleError(`Google error: ${tokenResponse.error_description || tokenResponse.error}`);
+              return;
+            }
+            try {
+              const infoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+              });
+              const info = await infoRes.json();
+              const result = await googleSignIn(role, {
+                token: tokenResponse.access_token,
+                email: info.email,
+                name: info.name,
+                picture: info.picture,
+              });
+              if (!result.ok) {
+                setGoogleError(result.reason ?? "Google sign-in failed.");
+                return;
+              }
+              setSession({
+                role: result.user.role,
+                demo: false,
+                name: result.user.name,
+                email: result.user.email,
+                picture: result.user.picture,
+              });
+              navigate(result.user.role === "admin" ? "/admin" : "/select-course", { replace: true });
+            } catch (err: any) {
+              setGoogleError(err?.message || "Failed to retrieve Google profile.");
+            }
+          },
+          error_callback: (err: any) => {
+            if (err?.type === "popup_closed") {
+              setGoogleError("Google Sign-in was cancelled.");
+            } else {
+              setGoogleError(err?.message || "Google popup error.");
+            }
+          },
+        });
+        client.requestAccessToken({ prompt: "select_account" });
+        return;
+      } catch (err: any) {
+        console.warn("Google GIS initialization error, falling back to server bridge:", err);
+      }
+    }
+
+    // Fallback through backend /api/auth/google
     const result = await googleSignIn(role);
     if (!result.ok) {
       setGoogleError(result.reason ?? "Google sign-in failed. Please try demo access.");

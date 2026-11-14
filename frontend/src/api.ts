@@ -79,13 +79,14 @@ type GoogleSignInResult =
   | { ok: false; reason: string };
 
 export async function googleSignIn(
-  role: "student" | "admin"
+  role: "student" | "admin",
+  extra?: { token?: string; credential?: string; name?: string; email?: string; picture?: string }
 ): Promise<GoogleSignInResult> {
   try {
     const res = await fetch(`${API_BASE}/api/auth/google`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role }),
+      body: JSON.stringify({ role, ...(extra || {}) }),
     });
     if (!res.ok) {
       return { ok: false, reason: "Server returned status " + res.status };

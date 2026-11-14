@@ -251,6 +251,10 @@ class PublishPayload(BaseModel):
 class GoogleAuthPayload(BaseModel):
     role: str = "student"
     token: str | None = None
+    credential: str | None = None
+    name: str | None = None
+    email: str | None = None
+    picture: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -303,35 +307,6 @@ def get_source(fact_id: str, db: DbSession) -> dict:
             return n
     return SEED_NOTICES[0]
 
-
-@router.get("/notices")
-def get_notices(db: DbSession) -> list[dict]:
-    """Return all notices as a flat array for the frontend notice library."""
-    from app.models.notice import Notice as NoticeModel
-    db_notices = list(db.scalars(select(NoticeModel).order_by(NoticeModel.issued_on.desc()).limit(100)))
-    result = []
-    for n in db_notices:
-        d_str = n.issued_on.strftime("%d %b %Y") if n.issued_on else "14 Nov 2026"
-        clean_num = f"PRM/2026/{str(n.id).replace('-','')[:3].upper()}"
-        result.append({
-            "id": str(n.id),
-            "title": n.title,
-            "issuer": n.issuer or "Administration",
-            "date": d_str,
-            "page": 1,
-            "status": n.status if n.status in ("current", "superseded", "expired", "published") else "current",
-            "category": (n.category or "General").capitalize(),
-            "noticeNumber": clean_num,
-            "replaces": None,
-            "body": n.summary or n.title,
-            "highlightedSentence": n.summary or n.title,
-        })
-    # Merge seed notices that aren't already represented
-    existing_ids = {r["id"] for r in result}
-    for sn in SEED_NOTICES:
-        if sn["id"] not in existing_ids:
-            result.append(sn)
-    return result
 
 
 @router.post("/upload")
@@ -506,14 +481,41 @@ def save_custom_fact(payload: CustomFactPayload, db: DbSession) -> list[dict]:
 
 @router.post("/auth/google")
 def google_auth(payload: GoogleAuthPayload) -> dict:
-    """Handle Google sign in."""
+    """Handle Google sign in with real Google user info or demo fallback."""
+    import base64
+    import json
     role = payload.role if payload.role in ("student", "admin") else "student"
+    name = payload.name
+    email = payload.email
+    picture = payload.picture
+
+    # If Google ID token credential was provided, extract user details
+    if payload.credential and (not email or not name):
+        try:
+            parts = payload.credential.split(".")
+            if len(parts) >= 2:
+                padded = parts[1] + "=" * (-len(parts[1]) % 4)
+                data = json.loads(base64.urlsafe_b64decode(padded.encode()).decode("utf-8"))
+                email = email or data.get("email")
+                name = name or data.get("name")
+                picture = picture or data.get("picture")
+        except Exception:
+            pass
+
+    # Fallback to college demo persona if not provided
+    if not name:
+        name = "Dr. S. K. Sharma" if role == "admin" else "Aarav Sharma"
+    if not email:
+        email = "sksharma@bkbirlacollege.edu.in" if role == "admin" else "aarav.sharma@student.bkbirlacollege.edu.in"
+    if not picture:
+        picture = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+
     return {
         "ok": True,
         "user": {
-            "name": "Dr. S. K. Sharma" if role == "admin" else "Aarav Sharma",
-            "email": "sksharma@bkbirlacollege.edu.in" if role == "admin" else "aarav.sharma@student.bkbirlacollege.edu.in",
-            "picture": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+            "name": name,
+            "email": email,
+            "picture": picture,
             "role": role,
         },
     }
