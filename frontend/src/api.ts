@@ -32,7 +32,7 @@ function isDemoSession(): boolean {
 
 // ---------- localStorage persistence ----------
 
-const STORAGE_KEY = "pramaan-demo-state-v10";
+const STORAGE_KEY = "pramaan-demo-state-v11";
 
 interface PersistedState {
   facts: typeof seedFacts;
@@ -92,6 +92,7 @@ export function resetDemo() {
   localStorage.removeItem("pramaan-demo-state-v8");
   localStorage.removeItem("pramaan-demo-state-v9");
   localStorage.removeItem("pramaan-demo-state-v10");
+  localStorage.removeItem("pramaan-demo-state-v11");
   localStorage.removeItem("pramaan-context");
 }
 

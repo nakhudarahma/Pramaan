@@ -37,12 +37,8 @@ export default function StudentPage() {
         getChanges(course, semester),
       ])
         .then(([nextDeadlines, nextChanges]) => {
-          if (Array.isArray(nextDeadlines) && nextDeadlines.length > 0) {
-            setDeadlines(nextDeadlines);
-          }
-          if (Array.isArray(nextChanges) && nextChanges.length > 0) {
-            setChanges(nextChanges);
-          }
+          setDeadlines(Array.isArray(nextDeadlines) ? nextDeadlines : []);
+          setChanges(Array.isArray(nextChanges) ? nextChanges : []);
         })
         .catch((err) => {
           console.warn("fetchData failed, retaining default records:", err);
@@ -75,7 +71,7 @@ export default function StudentPage() {
   };
 
   return (
-    <div className="flex h-[calc(100dvh_-_7.5rem_-_env(safe-area-inset-bottom))] flex-col overflow-hidden md:h-[calc(100dvh_-_3.5rem_-_1px)]">
+    <div className="min-h-[calc(100dvh_-_3.5rem_-_1px)] pb-28 md:pb-12">
       <ContextBar
         course={course}
         semester={semester}
@@ -83,40 +79,45 @@ export default function StudentPage() {
         onChange={update}
       />
 
-      <div className="relative flex-1 min-h-0">
+      <div className="relative">
         <div
           className="student-glow pointer-events-none absolute inset-x-0 top-0 h-56"
           aria-hidden="true"
         />
-        <div className="relative mx-auto flex h-full max-w-[1600px] flex-col px-4 md:px-8 xl:px-12 py-4">
+        <div className="relative mx-auto max-w-[1600px] px-4 md:px-8 xl:px-12 py-6">
           <div
-            className="student-reveal mb-4 flex-shrink-0"
+            className="student-reveal mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
             style={{ animationDelay: "0ms" }}
           >
-            <p className="text-base font-semibold text-navy-700 dark:text-night-text">
-              {greeting}, {firstName}
-            </p>
-            <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white dark:bg-night-card border border-slate-200 dark:border-night-border px-3 py-1 text-xs font-medium text-slate-500 dark:text-night-muted shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
-              Last updated: 12 Nov 2026
+            <div>
+              <p className="text-xl sm:text-2xl font-bold text-navy-700 dark:text-night-text">
+                {greeting}, {firstName}
+              </p>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-night-muted mt-0.5">
+                Official verified records and circular updates for your semester
+              </p>
+            </div>
+            <span className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-full bg-white dark:bg-night-card border border-slate-200 dark:border-night-border px-3 py-1 text-xs font-medium text-slate-500 dark:text-night-muted shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Live Ledger: 12 Nov 2026
             </span>
           </div>
 
-          <div className="flex flex-col flex-1 min-h-0 gap-4 overflow-y-auto thin-scrollbar pr-1">
+          <div className="space-y-6">
             <div
-              className="student-reveal flex-shrink-0"
+              className="student-reveal"
               style={{ animationDelay: "80ms" }}
             >
               <DeadlineStrip deadlines={deadlines} loading={loading} />
             </div>
             <div
-              className="student-reveal flex-1 min-h-0"
+              className="student-reveal"
               style={{ animationDelay: "160ms" }}
             >
               <ChangeFeed changes={changes} loading={loading} onSource={openSource} />
             </div>
             <div
-              className="student-reveal flex-shrink-0"
+              className="student-reveal"
               style={{ animationDelay: "240ms" }}
             >
               <IntentTiles onAsk={handleIntentAsk} />
