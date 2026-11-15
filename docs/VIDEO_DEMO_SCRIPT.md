@@ -1,62 +1,45 @@
-# Pramaan — 3-Minute Prototype Video Walkthrough Script
+# Pramaan — 3-Minute Prototype Video Walkthrough Script (Short & Punchy)
 
 **Target Duration:** 3 minutes (180 seconds)  
-**Tone:** Confident, problem-focused, crisp, and fast-paced  
-**Setup Checklist Before Recording:**
-- Browser opened to the Pramaan login screen (`/login`).
-- Browser window maximized (1080p, 100% zoom).
-- Audio microphone tested.
+**Style:** Short, punchy lines — easy to speak while recording.
 
 ---
 
-## Timeline Overview
+## Scene 1: Hook & The Problem (0:00 – 0:30)
 
-| Time | Segment | Core Focus |
+| Timestamp | Screen Action | Voiceover (Short & Crisp) |
 |---|---|---|
-| **0:00 – 0:30** | Hook & The Circular Crisis | The problem of messy, contradictory PDFs & missed deadlines |
-| **0:30 – 1:15** | Student Experience | Context Bar, Live Deadlines, What Changed Feed, Grounded Chatbot |
-| **1:15 – 2:15** | Admin Studio & Conflict Resolution | Upload extraction, resolving Notice #18 vs #19 contradiction, 1-click publish |
-| **2:15 – 3:00** | Architectural Moat & Impact | PyMuPDF parsing, 4 Truth States, zero-hallucination guarantee, wrap-up |
+| **0:00 – 0:10** | Show **Login Page**. Hover over demo buttons. | *"Colleges release dozens of circulars across WhatsApp and noticeboards. Dates shift, circulars clash, and students miss deadlines."* |
+| **0:10 – 0:20** | Click **"Demo: Continue as Student"**. | *"Standard AI chatbots hallucinate or cite expired PDFs. Meet **Pramaan** — a deterministic truth ledger for college circulars."* |
+| **0:20 – 0:30** | Land on **Student Dashboard**. | *"Pramaan converts messy PDFs into a verified truth feed with 100% page-level citations."* |
 
 ---
 
-## Detailed Scene-by-Scene Script
+## Scene 2: Student Experience & Grounded Truth (0:30 – 1:15)
 
-### Scene 1: Hook & The Problem (0:00 – 0:30)
-
-| Time | On-Screen Action | Voiceover (What to Say) |
+| Timestamp | Screen Action | Voiceover (Short & Crisp) |
 |---|---|---|
-| **0:00 – 0:10** | Show the **Login Screen**. Hover cursor over Google Login and Demo buttons. | *"Every semester, universities release dozens of circulars across notice boards, portals, and WhatsApp groups. The result? Total chaos. Dates change, fees get revised, circulars contradict one another, and students miss critical deadlines."* |
-| **0:10 – 0:20** | Click **"Demo: Continue as Student"**. | *"Standard AI chatbots hallucinate or cite expired circulars because they lack temporal awareness. Meet **Pramaan** — the deterministic truth ledger and conflict-resolution engine for college circulars."* |
-| **0:20 – 0:30** | Land on the **Student Dashboard**. | *"Pramaan turns unstructured PDFs into a real-time, verified ground-truth feed with 100% page-level citations."* |
+| **0:30 – 0:45** | Point to **Context Bar** (`B.Sc Data Science, Sem 4`). Pan across **Deadline Strip**. Click the calendar icon. | *"All notices are auto-scoped to my course and semester. At the top, the **Deadline Strip** shows live countdowns, with one-click calendar sync."* |
+| **0:45 – 0:58** | Scroll to **"What changed for you"**. Point to strikethrough badge (`Rs. 50 ➔ Rs. 75`). Click **`Notice 12 Nov, page 2`**. | *"Under **What changed for you**, students see clear diffs — like late fees revised from Rs. 50 to Rs. 75. Clicking it opens the exact circular page as proof."* |
+| **0:58 – 1:15** | Close drawer. Open chat. Type/click: *"What is the late fee?"* | *"Let's ask the chatbot: 'What is the late fee?'. Pramaan returns a **verified green card** with Rs. 75, notes the superseding notice, and links the page citation."* |
 
 ---
 
-### Scene 2: Student Experience & Grounded Truth (0:30 – 1:15)
+## Scene 3: Admin Studio & Conflict Resolution (1:15 – 2:15)
 
-| Time | On-Screen Action | Voiceover (What to Say) |
+| Timestamp | Screen Action | Voiceover (Short & Crisp) |
 |---|---|---|
-| **0:30 – 0:45** | Highlight the **Context Bar** (Course: B.Sc Data Science, Sem 4). Move cursor across the **Next Deadlines Strip** with countdown badges. | *"Here is the student dashboard. It automatically scopes notices to my course and semester. At the top, the **Deadline Strip** calculates real-time urgency countdowns, and with one click, I can sync any deadline directly to my calendar."* |
-| **0:45 – 0:58** | Scroll smoothly to **"What changed for you"**. Point to the strikethrough badge (`Rs. 50 ➔ Rs. 75`). Click the button: **`Notice 12 Nov, page 2`**. | *"Notice this section: **What changed for you**. Instead of reading a 10-page circular, students see instant diffs — like late fee revised from Rs. 50 to Rs. 75. Clicking the badge opens the **Source Drawer**, showing the exact circular and highlighted sentence for definitive proof."* |
-| **0:58 – 1:15** | Close drawer. Click the floating **"Ask Pramaan"** button. Type or click: *"What is the late fee?"* | *"Now let's ask the chatbot: 'What is the late fee?' Notice the response: Pramaan doesn't give a vague summary. It returns a **Verified Green State** with Rs. 75, notes that it supersedes the November 10th circular, and links the verified page citation."* |
+| **1:15 – 1:30** | Switch to `/login` and click **"Demo: Continue as Admin"**. | *"Now, where does this truth come from? The **Admin Studio** automatically parses uploaded PDFs into atomic facts."* |
+| **1:30 – 1:50** | Click **Conflicts card** (1 Conflict). Show Notice #18 (9 AM) vs Notice #19 (2 PM). Click **Resolve Conflict** ➔ select **Notice #19**. | *"Here is our core superpower: **Conflict Detection**. Notice 18 said 9 AM for labs; Notice 19 rescheduled to 2 PM. Pramaan flags the clash. The admin picks Notice 19 and resolves it in one click."* |
+| **1:50 – 2:05** | Approve remaining facts. Click **"Publish Approved Facts"**. Confetti bursts! 🎉 | *"I approve the pending facts and hit **Publish**. Outdated notices are archived, and the new ledger goes live instantly."* |
+| **2:05 – 2:15** | Scroll to **Unanswered Questions**. Click *"Re-exam date?"*, type answer, click **Save Fact**. | *"Admins can also answer unrecorded student queries, instantly converting student demand into official ground truth."* |
 
 ---
 
-### Scene 3: Admin Truth Studio & Conflict Resolution (1:15 – 2:15)
+## Scene 4: Architecture & Closing (2:15 – 3:00)
 
-| Time | On-Screen Action | Voiceover (What to Say) |
+| Timestamp | Screen Action | Voiceover (Short & Crisp) |
 |---|---|---|
-| **1:15 – 1:30** | Click Logout / switch to `/login` and click **"Demo: Continue as Admin"**. | *"Now, where does this truth come from? Let's switch to the **Admin Studio**. Administrators get an automated pipeline that extracts atomic facts from uploaded PDFs."* |
-| **1:30 – 1:50** | Click on the **Conflicts card** (showing 1 Conflict). Show the conflict between **Notice #18 and Notice #19** (9:00 AM vs 2:00 PM lab exam). Click **Resolve Conflict**. Select **Notice #19 (2:00 PM)**. | *"Here is Pramaan's core superpower: **Automated Conflict Detection**. Notice #18 scheduled lab exams at 9:00 AM, but Notice #19 rescheduled them to 2:00 PM. Instead of confusing students, Pramaan flags the contradiction for admin review. I simply select Notice #19 as the winning circular and confirm."* |
-| **1:50 – 2:05** | Approve remaining pending facts. Click the big **"Publish Approved Facts"** button. Watch the confetti burst! | *"With the conflict resolved, I review the pending facts, approve them, and hit **Publish**. Instantly, the old facts are archived as 'superseded' and the new ledger goes live to thousands of students."* |
-| **2:05 – 2:15** | Scroll down to **Unanswered Questions**. Click on *"Re-exam date?"*, type an answer, and click **Save Fact**. | *"Administrators can also see queries students asked that weren't in official records. With one click, an admin can answer it, turning unanswered student questions into instant verified ground truth."* |
-
----
-
-### Scene 4: Architecture, Moat & Closing (2:15 – 3:00)
-
-| Time | On-Screen Action | Voiceover (What to Say) |
-|---|---|---|
-| **2:15 – 2:35** | Switch back to the **Student Portal**. Ask *"What is the lab exam time?"* ➔ show it now says 2:00 PM. | *"Under the hood, Pramaan combines **PyMuPDF extraction**, **temporal conflict analysis**, and a **deterministic 4-state classifier**: Verified, Outdated, Disputed, or Unavailable. If an answer isn't backed by an authorized circular, Pramaan refuses to guess."* |
-| **2:35 – 2:50** | Show responsive layout / mobile view or smooth scroll through the dashboard. | *"The frontend is built with React 18, TypeScript, and Tailwind, backed by a high-throughput Python FastAPI service with an append-only audit trail for institutional compliance."* |
-| **2:50 – 3:00** | Return to the clean home screen. Camera / presenter view for final punchline. | *"Pramaan eliminates the circular crisis, protects colleges from misinformation, and guarantees students never miss a deadline again. Thank you!"* |
+| **2:15 – 2:35** | Switch back to **Student Portal**. Ask: *"What is the lab exam time?"* ➔ Show it now says 2:00 PM. | *"Back in student view, asking 'lab exam time' now answers 2 PM. Pramaan classifies every query into 4 states: Verified, Outdated, Disputed, or Unavailable. Zero guesswork."* |
+| **2:35 – 2:50** | Scroll through the clean dashboard showing Live Ledger date and Quick Topics. | *"Built with React 18, TypeScript, and FastAPI, Pramaan maintains an append-only audit trail for complete institutional compliance."* |
+| **2:50 – 3:00** | Return to home screen. Final wrap-up. | *"Pramaan turns contradictory circulars into a single verified truth, so students never miss a deadline again. Thank you!"* |
