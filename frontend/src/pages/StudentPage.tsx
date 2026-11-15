@@ -29,6 +29,13 @@ export default function StudentPage() {
   const greeting =
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
+  // Dynamic live ledger date (formats today's date, e.g. "15 Nov 2026")
+  const ledgerDate = new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date());
+
   const fetchData = useCallback(
     (showLoading = false) => {
       if (showLoading) setLoading(true);
@@ -99,7 +106,7 @@ export default function StudentPage() {
             </div>
             <span className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-full bg-white dark:bg-night-card border border-slate-200 dark:border-night-border px-3 py-1 text-xs font-medium text-slate-500 dark:text-night-muted shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Live Ledger: 12 Nov 2026
+              Live Ledger: {ledgerDate}
             </span>
           </div>
 
